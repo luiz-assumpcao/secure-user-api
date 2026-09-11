@@ -28,4 +28,14 @@ public class UserController {
         UserResponseDTO created = userService.createUser(request, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponseDTO>> listUsers() {
+        return ResponseEntity.ok(userService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
+    }
 }
