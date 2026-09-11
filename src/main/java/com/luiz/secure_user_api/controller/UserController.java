@@ -1,0 +1,31 @@
+package com.luiz.secure_user_api.controller;
+
+import com.luiz.secure_user_api.dto.UserRequestDTO;
+import com.luiz.secure_user_api.dto.UserResponseDTO;
+import com.luiz.secure_user_api.entity.Role;
+import com.luiz.secure_user_api.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO request) {
+        // Ainda não há restrição de papel, passará a ser permitido apenas para ADMIN quando o RBAC estiver implementado.
+        Role role = request.getRole() != null ? request.getRole() : Role.CUSTOMER;
+        UserResponseDTO created = userService.createUser(request, role);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+}
