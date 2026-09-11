@@ -22,7 +22,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Stored as a BCrypt hash, never plain text
     @Column(nullable = false)
     private String password;
 
