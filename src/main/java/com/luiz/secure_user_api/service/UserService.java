@@ -4,6 +4,7 @@ import com.luiz.secure_user_api.dto.UserRequestDTO;
 import com.luiz.secure_user_api.dto.UserResponseDTO;
 import com.luiz.secure_user_api.entity.Role;
 import com.luiz.secure_user_api.entity.User;
+import com.luiz.secure_user_api.exception.EmailAlreadyInUseException;
 import com.luiz.secure_user_api.exception.UserNotFoundException;
 import com.luiz.secure_user_api.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,10 @@ public class UserService {
     }
 
     public UserResponseDTO createUser(UserRequestDTO request, Role role) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyInUseException(request.getEmail());
+        }
+
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
