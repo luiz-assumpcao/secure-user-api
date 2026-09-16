@@ -23,6 +23,10 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    private UserResponseDTO toResponseDTO(User user) {
+        return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
+    }
+
     public UserResponseDTO createUser(UserRequestDTO request, Role role) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyInUseException(request.getEmail());
@@ -69,7 +73,19 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    private UserResponseDTO toResponseDTO(User user) {
-        return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
+    public UserResponseDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return toResponseDTO(user);
+    }
+
+    public UserResponseDTO updateOwnProfile(String email, UserRequestDTO request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+
+        return toResponseDTO(userRepository.save(user));
     }
 }
