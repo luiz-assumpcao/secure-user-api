@@ -42,8 +42,12 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
-                                                      @Valid @RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(userService.update(id, request));
+                                                      @Valid @RequestBody UserRequestDTO request,
+                                                      Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        return ResponseEntity.ok(userService.update(id, request, isAdmin));
     }
 
     @DeleteMapping("/{id}")

@@ -53,13 +53,13 @@ public class UserService {
         return toResponseDTO(user);
     }
 
-    public UserResponseDTO update(Long id, UserRequestDTO request) {
+    public UserResponseDTO update(Long id, UserRequestDTO request, boolean canChangeRole) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        if (request.getRole() != null) {
+        if (canChangeRole && request.getRole() != null) {
             user.setRole(request.getRole());
         }
 
