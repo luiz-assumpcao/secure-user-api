@@ -7,6 +7,7 @@ import com.luiz.secure_user_api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,13 +42,28 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
-                                                      @Valid @RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(userService.update(id, request));
+                                                      @Valid @RequestBody UserRequestDTO request,
+                                                      Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        return ResponseEntity.ok(userService.update(id, request, isAdmin));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
+        return ResponseEntity.ok(userService.findByEmail(authentication.getName()));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponseDTO> updateCurrentUser(Authentication authentication,
+                                                             @Valid @RequestBody UserRequestDTO request) {
+        return ResponseEntity.ok(userService.updateOwnProfile(authentication.getName(), request));
     }
 }
