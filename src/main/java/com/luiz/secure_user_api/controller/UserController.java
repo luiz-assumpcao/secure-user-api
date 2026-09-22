@@ -2,6 +2,7 @@ package com.luiz.secure_user_api.controller;
 
 import com.luiz.secure_user_api.dto.UserRequestDTO;
 import com.luiz.secure_user_api.dto.UserResponseDTO;
+import com.luiz.secure_user_api.dto.UserUpdateRequestDTO;
 import com.luiz.secure_user_api.entity.Role;
 import com.luiz.secure_user_api.service.UserService;
 import jakarta.validation.Valid;
@@ -30,7 +31,7 @@ public class UserController {
 
     @PutMapping("/me")
     public ResponseEntity<UserResponseDTO> updateCurrentUser(Authentication authentication,
-                                                             @Valid @RequestBody UserRequestDTO request) {
+                                                             @Valid @RequestBody UserUpdateRequestDTO request) {
         return ResponseEntity.ok(userService.updateOwnProfile(authentication.getName(), request));
     }
 
@@ -54,7 +55,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,
-                                                      @Valid @RequestBody UserRequestDTO request,
+                                                      @Valid @RequestBody UserUpdateRequestDTO request,
                                                       Authentication authentication) {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));

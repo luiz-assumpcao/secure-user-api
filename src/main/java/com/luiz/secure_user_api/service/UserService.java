@@ -2,6 +2,7 @@ package com.luiz.secure_user_api.service;
 
 import com.luiz.secure_user_api.dto.UserRequestDTO;
 import com.luiz.secure_user_api.dto.UserResponseDTO;
+import com.luiz.secure_user_api.dto.UserUpdateRequestDTO;
 import com.luiz.secure_user_api.entity.Role;
 import com.luiz.secure_user_api.entity.User;
 import com.luiz.secure_user_api.exception.EmailAlreadyInUseException;
@@ -53,7 +54,7 @@ public class UserService {
         return toResponseDTO(user);
     }
 
-    public UserResponseDTO update(Long id, UserRequestDTO request, boolean canChangeRole) {
+    public UserResponseDTO update(Long id, UserUpdateRequestDTO request, boolean canChangeRole) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
@@ -79,7 +80,7 @@ public class UserService {
         return toResponseDTO(user);
     }
 
-    public UserResponseDTO updateOwnProfile(String email, UserRequestDTO request) {
+    public UserResponseDTO updateOwnProfile(String email, UserUpdateRequestDTO request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
