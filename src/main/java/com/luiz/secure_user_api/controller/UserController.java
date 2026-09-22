@@ -22,6 +22,18 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
+        System.out.println("Reached /users/me controller for: " + authentication.getName());
+        return ResponseEntity.ok(userService.findByEmail(authentication.getName()));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponseDTO> updateCurrentUser(Authentication authentication,
+                                                             @Valid @RequestBody UserRequestDTO request) {
+        return ResponseEntity.ok(userService.updateOwnProfile(authentication.getName(), request));
+    }
+
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO request) {
         // Ainda não há restrição de papel, passará a ser permitido apenas para ADMIN quando o RBAC estiver implementado.
@@ -54,16 +66,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
-        return ResponseEntity.ok(userService.findByEmail(authentication.getName()));
-    }
-
-    @PutMapping("/me")
-    public ResponseEntity<UserResponseDTO> updateCurrentUser(Authentication authentication,
-                                                             @Valid @RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(userService.updateOwnProfile(authentication.getName(), request));
     }
 }
